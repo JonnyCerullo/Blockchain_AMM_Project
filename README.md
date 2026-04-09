@@ -199,8 +199,6 @@ This project is for **educational and research purposes only**. It is not intend
 
 ### Limitations
 - No gas costs modeled
-- No multi-hop routing
-- No impermanent loss tracking (implicit only)
 - Single pool per simulation (no cross-pool arbitrage)
 
 ---
