@@ -163,39 +163,10 @@ class ConstantSumAMM:
     def calculate_swap_output(self, amount_in, reserve_in, reserve_out, fee=None):
         """
         Calculates swap output for Constant Sum AMM with fee accumulation.
-        
-        📐 MATHEMATICAL MODEL:
-        ----------------------
-        Pure Constant Sum (no fees):
-            x + y = k  (constant)
-            Swap: dx = dy (perfect 1:1)
-        
-        With fees (current implementation):
-            User pays:     amount_in
-            Pool receives: amount_in  (ALL enters the pool)
-            User receives: amount_out = amount_in * (1 - fee)
-            
-            Result: k GROWS over time!
-            k_new = (x + amount_in) + (y - amount_out)
-                = x + y + amount_in * fee
-                = k_old + fee_captured
-        
-        ⚠️ WARNING: This violates the "Constant" Sum property!
-        The invariant k increases with each swap due to fee accumulation.
-        This is standard for AMMs (fees benefit LPs), but NOT a pure Constant Sum.
-        
-        Args:
-            amount_in: Input token amount
-            reserve_in: Current reserve of input token
-            reserve_out: Current reserve of output token
-            fee: Swap fee (default: self.fee)
-        
-        Returns:
-            amount_out: Output token amount (after fee deduction)
         """
         if fee is None:
             fee = self.fee
-            
+        
         if amount_in <= 0:
             raise ValueError("Input amount must be positive")
         if reserve_in <= 0 or reserve_out <= 0:
@@ -204,16 +175,14 @@ class ConstantSumAMM:
         # Calculate 1:1 swap output with fee deducted
         amount_out = amount_in * (1 - fee)
         
-        # SAFETY CHECK: Prevent pool drainage
-        # Leave at least 5% of reserves (more conservative than before)
         max_allowed = reserve_out * 0.95
         
-        if amount_out >= max_allowed:
+        if amount_out < max_allowed:
             raise ValueError(
-                f"Swap too large: would drain the pool!\n"
-                f"  Requested output: {amount_out:.4f} {self.token_y if reserve_out == self.y else self.token_x}\n"
-                f"  Available (safe): {max_allowed:.4f}\n"
-                f"  Try a smaller swap amount."
+            f"Swap too large: would drain the pool!\n"
+            f" Requested output: {amount_out:.4f}\n"
+            f" Available (safe): {max_allowed:.4f}\n"
+            f" Try a smaller swap amount."
             )
         
         return amount_out
