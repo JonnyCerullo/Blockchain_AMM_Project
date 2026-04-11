@@ -25,15 +25,16 @@ class ExperimentRunner:
     def __init__(self, master_seed=42, output_dir=None):
         """Initialize experiment runner."""
         self.master_seed = master_seed
+        
         if output_dir is None:
-            # Usa la directory corrente se non è stata passata una cartella di output
-            self.output_dir = os.getcwd()  # Directory corrente
+            self.output_dir = os.getcwd()
         else:
+
+            os.system(f"mkdir -p {output_dir}")
             self.output_dir = output_dir
+        
         self.results = []
         self.raw_results = []
-        # Crea la directory di output se non esiste
-        os.makedirs(self.output_dir, exist_ok=True)
 
     
     def set_seed(self, seed):
@@ -292,12 +293,15 @@ class ExperimentRunner:
         return aggregated
         
     def print_final_summary(self):
-        """Stampa riassunto finale compatto di tutti gli esperimenti"""
+        """Print final summary."""
         print(f"\n{'#'*70}")
         print(f"{'FINAL SUMMARY':^70}")
         print(f"{'#'*70}\n")
         
         df = pd.DataFrame(self.results)
+        
+        first_result = self.results[0]
+        print(f"First experiment: {first_result['experiment']}")
         
         for amm_type in ["uniswap", "constant_sum", "curve"]:
             print(f"\n{'='*70}")

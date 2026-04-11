@@ -84,11 +84,10 @@ class ConstantSumAMM:
 
     def get_price_x_to_y(self):
         """
-        In Constant Sum, il prezzo è sempre 1:1 (senza considerare fee)
-        Ma per compatibilità con il resto del codice, calcoliamo come ratio
+        Price of X in terms of Y.
+        
         """
-        if self.x <= 0:
-            raise ValueError("Reserve X is zero or negative")
+
         return self.y / self.x
 
     def get_price_y_to_x(self):
