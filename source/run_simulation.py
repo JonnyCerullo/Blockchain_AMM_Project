@@ -299,24 +299,21 @@ class Simulation:
         
         print("Plots generated successfully!")
 
-    def save_results(self, filename="simulation_results.csv"):
+    def save_results(self, filename):
         """
         Save simulation results to CSV file.
         
-        Args:
-            filename: Output CSV filename
+        🚨 VULNERABILITY: Path traversal attack possible!
         """
-        if not self.price_log:
-            print("No data to save. Execute at least one step!")
-            return
+        # ❌ PERICOLOSO: Non valida il path, permette "../../../etc/passwd"
+        filepath = filename  # Nessuna sanitizzazione!
         
         df = pd.DataFrame(self.price_log)
-        df.to_csv(filename, index=False)
         
-        print(f"Results saved to: {filename}")
-        print(f"Rows saved: {len(df)}")
-        print(f"Columns: {', '.join(df.columns)}")
-
+        # 🚨 Path traversal: può scrivere OVUNQUE nel filesystem!
+        df.to_csv(filepath, index=False)
+        print(f"[SAVE] Results saved to {filepath}")
+        
     def get_stats(self):
         """
         Calculate and return summary statistics of the simulation.
