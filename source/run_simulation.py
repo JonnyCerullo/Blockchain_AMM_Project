@@ -1,6 +1,7 @@
 # Simulation engine for AMM behavior analysis under chaotic market conditions.
 # Coordinates interactions between AMM, traders, arbitrageurs, and liquidity providers.
 
+from fileinput import filename
 import random
 from amm_uniswap import UniswapAMM
 from amm_constant_sum import ConstantSumAMM
@@ -299,23 +300,19 @@ class Simulation:
         
         print("Plots generated successfully!")
 
-    def save_results(self, filename="simulation_results.csv"):
+    def save_results(self, filename):
         """
         Save simulation results to CSV file.
         
-        Args:
-            filename: Output CSV filename
         """
-        if not self.price_log:
-            print("No data to save. Execute at least one step!")
-            return
+        import pandas as pd
         
+
         df = pd.DataFrame(self.price_log)
-        df.to_csv(filename, index=False)
         
-        print(f"Results saved to: {filename}")
-        print(f"Rows saved: {len(df)}")
-        print(f"Columns: {', '.join(df.columns)}")
+        # Scrive direttamente senza controlli
+        df.to_csv(filename, index=False)
+        print(f"[SAVE] Results saved to {filename}")
 
     def get_stats(self):
         """
